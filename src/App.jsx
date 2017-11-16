@@ -21,7 +21,7 @@ class App extends Component {
       const hasParent = splitPath.length > 1;
       if (hasParent) {
         const parentPaths = splitPath.slice(0, splitPath.length - 1);
-        // navigates from root into nested objects until we 
+        // navigates from root into nested objects until we
         // reach the one in which we need to insert this child obejct
         let directParent = rootTree;
         let pathString = '';
@@ -33,33 +33,28 @@ class App extends Component {
           } else {
             pathString += '/'; // if we need go one more level in, this will seperate following PathSegment on next iteration
           }
-        })
+        });
       } else { // if parent is root
-          rootTree.gitObjects.push(newObject);
-     }
-    }
-  );
-      this.setState({
-        gitObjects: rootTree.gitObjects
-      })
+        rootTree.gitObjects.push(newObject);
+      }
+    });
+    this.setState({
+      gitObjects: rootTree.gitObjects
+    });
   }
 
   renderTree = (tree) => {
-    return tree.map( object => {
-      if (object.type === 'tree') {
-        return <Tree  key={object.path} object={object} renderTree={this.renderTree} />
-      } else {
-        return <Blob  key={object.path} object={object} />
-      }
-    })
+    return tree.map((object) => {
+      return object.type === 'tree' ?
+      <Tree key={object.path} object={object} renderTree={this.renderTree} /> :
+      <Blob key={object.path} object={object} />;
+    });
   }
 
   handleClick = () => {
     fetch('https://api.github.com/repos/jonnyk20/repo-content/git/trees/master?recursive=1')
       .then(res => res.json())
-        .then( data => {
-          this.getTree(data);
-        })
+      .then(data => this.getTree(data));
   }
 
   render() {
