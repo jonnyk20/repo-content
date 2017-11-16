@@ -7,18 +7,25 @@ class App extends Component {
     repo: []
   }
   renderTree = (tree) => {
-    console.log(tree)
+
     if (tree.length === 0) {
       return;
     }
-    console.log('rendering anyways')
     return tree.map( item => {
+      if (item.path === 'build/samplenested'){
+        console.log('Sample Nested')
+        console.log(item)
+      }
       if (item.type === 'tree') {
-        return <Tree  key={item.sha} item={item} renderTree={this.renderTree} />
+        return <Tree  key={item.path} item={item} renderTree={this.renderTree} />
       } else {
-        return <Blob  key={item.sha} item={item} />
+        return <Blob  key={item.path} item={item} />
       }
     })
+  }
+
+  buildTree(tree){
+
   }
 
   handleClick = () => {
@@ -40,7 +47,6 @@ class App extends Component {
             } else {
               /* find belonging repo object */
               const tree = repo.find( object => object.path === item.path.split('/')[0])
-              console.log('pushing into tree:', tree.path)
                /* push item into repo object */
               tree.items.push(newObject);
             }
