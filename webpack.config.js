@@ -12,6 +12,13 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/build/'
   },
+  resolve: {
+    modules: [
+      path.resolve('./'),
+      path.resolve('./node_modules'),
+    ],
+    extensions: ['.js', '.jsx', '.scss'],
+  },
   module: {
     rules: [
       {
