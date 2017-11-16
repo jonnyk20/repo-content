@@ -7,10 +7,16 @@ class App extends Component {
     repo: []
   }
   renderTree = (tree) => {
-
     if (tree.length === 0) {
       return;
     }
+    // return (
+    //   this.state.repo.map((item) => {
+    //     return (
+    //       <li key={item.path}> {item.path} </li>
+    //     )
+    //   })
+    // )
     return tree.map( item => {
       if (item.path === 'build/samplenested'){
         console.log('Sample Nested')
@@ -24,15 +30,12 @@ class App extends Component {
     })
   }
 
-  buildTree(tree){
-
-  }
-
   handleClick = () => {
     const repo = [];
     fetch('https://api.github.com/repos/jonnyk20/repo-content/git/trees/master?recursive=1')
       .then(res => res.json())
         .then( data => {
+          const repo = { path: '/', items: [] };
           data.tree.forEach((item) => {
             const newObject = {
               type: item.type,
@@ -40,20 +43,41 @@ class App extends Component {
               sha: item.sha,
               items: item.type == 'tree' ? [] : null
             };
-            const parentTree = (item.path.split('/')[0] !== item.path) ? item.path.split('/')[0] : 'root';
-            newObject.parentTree = parentTree;
-            if (parentTree === 'root') {
-              repo.push(newObject);
+            console.log('path:', newObject.path)
+            const splitPath = newObject.path.split('/');
+            console.log('split path:', splitPath)
+            const hasParent = splitPath.length > 1;
+            console.log('has parent:', hasParent)
+            if (hasParent){
+              const parentPaths = splitPath.slice(0, splitPath.length - 1)
+              console.log(parentPaths)
+              console.log('parent', parentPaths)
+              let directParent = repo;
+              let paths = '';
+              console.log('---looop---')
+              parentPaths.forEach((path, i, arr) => {
+                console.log('-iteration-')
+                paths += path;
+                console.log('direct parent:', directParent)
+                if (typeof directParent === 'object'){
+                  console.log('finding direct parent where path is', path)
+                  directParent = directParent.items.find((child) => {return child.path === paths})
+                }
+                console.log('direct parent has changed to', directParent)
+                if (i === arr.length -1){
+                  console.log('final one, inserting')
+                } else {
+                  paths += '/';
+                }
+                directParent.items.push(newObject)
+              })
             } else {
-              /* find belonging repo object */
-              const tree = repo.find( object => object.path === item.path.split('/')[0])
-               /* push item into repo object */
-              tree.items.push(newObject);
-            }
+              repo.items.push(newObject);
+           }
           }
         );
           this.setState({
-            repo
+            repo: repo.items
           })
         })
   }
