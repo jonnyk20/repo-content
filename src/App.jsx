@@ -1,44 +1,47 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Tree from './Tree';
 import Blob from './Blob';
 
 class App extends Component {
+
   state = {
     gitObjects: []
   }
-  getTree(treeData){
+
+  getTree(treeData) {
     const rootTree = { path: '/', gitObjects: [] };
     treeData.tree.forEach(({ path, type, sha }) => {
       const newObject = {
-        type: type,
-        path: path,
-        sha: sha,
-        gitObjects: type == 'tree' ? [] : null
+        type,
+        path,
+        sha,
+        gitObjects: type === 'tree' ? [] : null
       };
       const splitPath = newObject.path.split('/');
       const hasParent = splitPath.length > 1;
-      if (hasParent){
-        const parentPaths = splitPath.slice(0, splitPath.length - 1)
-        // navigates from root into nested objects until we reach the one in which we need to insert this child obejct
+      if (hasParent) {
+        const parentPaths = splitPath.slice(0, splitPath.length - 1);
+        // navigates from root into nested objects until we 
+        // reach the one in which we need to insert this child obejct
         let directParent = rootTree;
-        let paths = '';
-        parentPaths.forEach((path, i, arr) => {
-          paths += path;
-          directParent = directParent.gitObjects.find((child) => {return child.path === paths})
-          if (i === arr.length - 1){
-            directParent.gitObjects.push(newObject)
+        let pathString = '';
+        parentPaths.forEach((pathSegment, i, arr) => {
+          pathString += pathSegment;
+          directParent = directParent.gitObjects.find(child => child.path === pathString);
+          if (i === arr.length - 1) { // if we've reached the actual direct parent
+            directParent.gitObjects.push(newObject);
           } else {
-            paths += '/';
+            pathString += '/'; // if we need go one more level in, this will seperate following PathSegment on next iteration
           }
         })
       } else { // if parent is root
-        rootTree.gitObjects.push(newObject);
+          rootTree.gitObjects.push(newObject);
      }
     }
   );
-    this.setState({
-      gitObjects: rootTree.gitObjects
-    })
+      this.setState({
+        gitObjects: rootTree.gitObjects
+      })
   }
 
   renderTree = (tree) => {
@@ -66,7 +69,7 @@ class App extends Component {
         <button onClick={this.handleClick}>Get Repo Tree</button>
         <div> Repository Tree </div>
         <ul>
-          { this.state.gitObjects.length > 0 && this.renderTree(this.state.gitObjects) }
+          { this.renderTree(this.state.gitObjects) }
         </ul>
       </div>
     );
