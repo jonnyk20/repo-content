@@ -1,9 +1,15 @@
 import React from 'react';
+import { string, object } from 'prop-types'; 
 
-const Blob = (props) => {
+const Blob = ({ object: { path } } ) => {
  return <li> 
-   Blob -- Path: {props.item.path}, Type: {props.item.type}, parentBlob: {props.item.parentTree}
+   Blob: {path}
    </li>
+}
+
+Blob.propTypes = {
+  object: object,
+  path: string
 }
 
 export default Blob;

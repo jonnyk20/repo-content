@@ -1,12 +1,20 @@
 import React from 'react';
+import { func, object, string, array}from 'prop-types'; 
 
-const Tree = (props) => {
+function Tree({ renderTree, object: { path, gitObjects }}) {
  return <li> 
-    Tree -- Path: {props.item.path},  Type: {props.item.type},  parentTree: {props.item.parentTree}
+    Tree: {path}
     <ul>
-      {props.renderTree(props.item.items)}
+      {renderTree(gitObjects)}
     </ul>
    </li>
 }
 
 export default Tree;
+
+Tree.propTypes = {
+  renderTree: func,
+  object: object,
+  path: string,
+  gitObjects: array
+}
